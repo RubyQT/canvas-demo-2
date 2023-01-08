@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画板</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <canvas id="canvas" width="100" height="100"></canvas>
+    <script>
+
+        let canvas = document.getElementById('canvas');
+        // 画线
+        let last
+
+        canvas.width = document.documentElement.clientWidth
+        canvas.height = document.documentElement.clientHeight
+        // 设置画布大小为文档大小
+
+
+        let ctx = canvas.getContext('2d');
+
+
+        ctx.fillStyle = '#008c8c';
+        ctx.lineWidth = 8; //加大线宽
+        ctx.lineCap = "round";  //把两根线之间的锯齿变得圆润
+        let sg = false;
+        // ctx.strokeStyle = 'none'
+
+
+
+
+
+
+
+        // 以下是不停打点
+        // let isTouchDevice = 'ontouchstart' in document.documentElement;
+
+        // if (isTouchDevice) {
+        //     // 如果是触屏设备，监听触屏移动事件
+        //     canvas.ontouchmove = (e) => {
+        //         let x = e.touches[0].clientX
+        //         let y = e.touches[0].clientY
+        //         ctx.beginPath();
+        //         ctx.arc(x, y, 10, 0, 2 * Math.PI);
+        //         // ctx.stroke();
+        //         ctx.fill();
+        //     }
+        // } else {
+        //     // 如果不是触屏设备，监听鼠标移动事件
+        //     let sg = false;
+        //     canvas.onmousedown = () => {
+        //         sg = true
+        //     }
+        //     canvas.onmousemove = (e) => {
+        //         if (sg === true) {
+        //             ctx.beginPath();
+        //             ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
+        //             // ctx.stroke();
+        //             ctx.fill();
+        //         }
+        //     }
+
+        //     canvas.onmouseup = () => {
+        //         sg = false
+        //     }
+        // }
+
+
+        // 更换为作用自己设置的drawLine函数
+        let isTouchDevice = 'ontouchstart' in document.documentElement;
+
+        if (isTouchDevice) {
+            // 如果是触屏设备，监听触屏移动事件
+            canvas.ontouchstart = (e) => {
+                let x = e.touches[0].clientX
+                let y = e.touches[0].clientY
+                last = [x, y]
+            }
+            // 加这个是为它赋值第一个last的值
+
+            canvas.ontouchmove = (e) => {
+                let x = e.touches[0].clientX
+                let y = e.touches[0].clientY
+                drawLine(last[0], last[1], x, y)
+                last = [x, y]
+                // 马上把这次的位置记在一个位置，作为“上一次”
+                // console.log(last);
+            }
+        } else {
+            // 如果不是触屏设备，监听鼠标移动事件
+
+            canvas.onmousedown = (e) => {
+                sg = true
+                last = [e.clientX, e.clientY]
+                // console.log(last);
+            }
+
+            canvas.onmousemove = (e) => {
+                if (sg === true) {
+                    drawLine(last[0], last[1], e.clientX, e.clientY)
+                    last = [e.clientX, e.clientY]
+                }
+            }
+
+            canvas.onmouseup = () => {
+                sg = false
+            }
+            // 松开就变成了”红灯“
+        }
+
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            // ctx.lineTo(45, 125);
+            // ctx.closePath();
+            ctx.stroke();
+        }
+
+
+    </script>
+</body>
+
+</html>
